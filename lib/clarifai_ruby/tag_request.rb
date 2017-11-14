@@ -8,14 +8,15 @@ module ClarifaiRuby
       @client = Client.new
     end
 
-    def get(image_url, opts = {})
-      content_type = get_content_type(image_url)
+    def get(url, opts = {})
+      media_url = url.split('?').first
+      content_type = get_content_type(media_url)
       body = {
         inputs: [
           {
             data: {
               content_type => {
-                url: image_url
+                url: media_url
               }
             }
           }
