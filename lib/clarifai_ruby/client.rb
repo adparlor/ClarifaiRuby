@@ -1,36 +1,37 @@
+require 'faraday_middleware'
+
 module ClarifaiRuby
   class RequestError < StandardError; end
 
   class Client
-    include HTTMultiParty
-    # debug_output $stderr
-    
-    disable_rails_query_string_format
-
-    attr_reader :token
+    attr_reader :api_key, :conn
 
     def initialize
-      @token = Token.new.token
-      self.class.base_uri ClarifaiRuby.configuration.api_url
-      self.class.headers auth_header
+      @api_key = ClarifaiRuby.configuration.api_key
     end
 
-    def get(url, opts={})
-      response = self.class.get(url, query: opts)
-      #TODO handle raising any errors here
+    def conn
+      @conn ||= Faraday.new(url: ClarifaiRuby.configuration.base_url) do |faraday|
+        faraday.request  :url_encoded
+        faraday.response :logger
+        faraday.response :json, content_type: /\bjson$/
+        faraday.adapter  Faraday.default_adapter
+      end
     end
 
-    def post(url, opts={})
-      response = self.class.post(url, query: opts)
-      #TODO handle raising any errors here
+    def get(url, opts = {})
+      conn.get("#{ClarifaiRuby.configuration.version_path}/#{url}", opts)
+      # TODO: handle raising any errors here
     end
 
-    private
-
-    def auth_header
-      {
-        "Authorization" => "Bearer #{token}"
-      }
+    def post(url, body = {})
+      conn.post do |request|
+        request.url "#{ClarifaiRuby.configuration.version_path}/#{url}"
+        request.headers['Content-Type'] = 'application/json'
+        request.headers['Authorization'] = "Key #{api_key}"
+        request.body = body.to_json
+      end
+      # TODO: handle raising any errors here
     end
   end
 end

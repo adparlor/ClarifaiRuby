@@ -1,6 +1,6 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
-require "codeclimate-test-reporter"
-CodeClimate::TestReporter.start
+# require "codeclimate-test-reporter"
+# CodeClimate::TestReporter.start
 
 require 'clarifai_ruby'
 require 'pry'
@@ -15,7 +15,6 @@ end
 
 ClarifaiRuby.configure do |config|
   config.base_url = 'https://api.clarifai.com'
-  config.version_path = "/v1"
-  config.client_id = "-GMMA7LUQQ_xKYRWQDgIosC2U6JNusO7R7neDIJy"
-  config.client_secret = "VPH8lyZjE9BhnztcvXeGWRA_OUEfckFBt4sgWqXj"
+  config.version_path = '/v2'
+  config.api_key = 'api_key'
 end

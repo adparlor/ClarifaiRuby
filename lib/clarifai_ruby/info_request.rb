@@ -8,7 +8,7 @@ module ClarifaiRuby
     end
 
     def get(opts = {})
-      @raw_response = @client.get(INFO_PATH, opts).parsed_response
+      @raw_response = @client.get(INFO_PATH, opts).body
       InfoResponse.new(raw_response)
     end
   end

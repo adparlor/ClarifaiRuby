@@ -1,22 +1,28 @@
 module ClarifaiRuby
   class TagRequest
-    TAG_PATH = '/tag'
     attr_reader :raw_response, :options
 
     def initialize
       @client = Client.new
     end
 
-    def get(image_url, opts={})
+    def get(image_url, opts = {})
       body = {
-        url: image_url,
-        model: opts[:model]
+        inputs: [
+          {
+            data: {
+              image: {
+                url: image_url
+              }
+            }
+          }
+        ]
       }
 
       build_request!(body, opts)
 
-      @raw_response = @client.get(TAG_PATH, body).parsed_response
-      raise RequestError.new @raw_response["status_msg"] if @raw_response["status_code"] != "OK"
+      @raw_response = @client.post(tag_path(opts[:model]), body).body
+      raise RequestError.new @raw_response['status_msg'] if @raw_response['status']['description'].upcase != "OK"
 
       TagResponse.new(raw_response)
     end
@@ -34,6 +40,10 @@ module ClarifaiRuby
       if opts.has_key? :select_classes
         body.merge!(select_classes: opts[:select_classes])
       end
+    end
+
+    def tag_path(model = nil)
+      "/models/#{model || 'aaa03c23b3724a16a56b629203edc62c'}/outputs"
     end
   end
 end

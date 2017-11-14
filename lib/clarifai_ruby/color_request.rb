@@ -13,7 +13,7 @@ module ClarifaiRuby
         url: url
       }
 
-      @raw_response = @client.get(COLOR_PATH, query).parsed_response
+      @raw_response = @client.get(COLOR_PATH, query).body
       ColorResponse.new(raw_response)
     end
   end

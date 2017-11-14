@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe ClarifaiRuby::Configuration do
   let(:default_base_url) { "https://api.clarifai.com" }
-  let(:default_version_path) { "/v1" }
-  let(:default_api_url) { "https://api.clarifai.com/v1" }
+  let(:default_version_path) { "/v2" }
+  let(:default_api_url) { "https://api.clarifai.com/v2" }
 
   describe "#initialize" do
     it "sets the default base url" do
