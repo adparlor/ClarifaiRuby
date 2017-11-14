@@ -1,3 +1,5 @@
+require 'mime/types'
+
 module ClarifaiRuby
   class TagRequest
     attr_reader :raw_response, :options
@@ -7,11 +9,12 @@ module ClarifaiRuby
     end
 
     def get(image_url, opts = {})
+      content_type = get_content_type(image_url)
       body = {
         inputs: [
           {
             data: {
-              image: {
+              content_type => {
                 url: image_url
               }
             }
@@ -22,12 +25,21 @@ module ClarifaiRuby
       build_request!(body, opts)
 
       @raw_response = @client.post(tag_path(opts[:model]), body).body
-      raise RequestError.new @raw_response['status_msg'] if @raw_response['status']['description'].upcase != "OK"
+      raise RequestError, @raw_response['status_msg'] if @raw_response['status']['description'].upcase != "OK"
 
-      TagResponse.new(raw_response)
+      TagResponse.new(raw_response, type: content_type)
     end
 
     private
+
+    def get_content_type(file_name)
+      content_type = MIME::Types.type_for(file_name.split('?').first)
+      if /image/ =~ content_type.first.content_type
+        :image
+      else
+        :video
+      end
+    end
 
     def build_request!(body, opts)
       if opts.has_key? :language

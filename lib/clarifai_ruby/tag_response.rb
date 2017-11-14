@@ -20,11 +20,10 @@ module ClarifaiRuby
 
     def generate_tag_creatives_for(type: :image, outputs: outputs)
       outputs.map do |results|
-        concepts = results['data']['concepts']
         if type == :video
-          TagVideo.new(concepts)
+          TagVideo.new(results['data']['frames'])
         else
-          TagImage.new(concepts)
+          TagImage.new(results['data']['concepts'])
         end
       end
     end
